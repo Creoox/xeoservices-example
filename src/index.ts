@@ -39,7 +39,7 @@ async function checkConverterStatus() {
   }
 }
 
-async function uploadFile(filePath: string): string {
+async function uploadFile(filePath: string): Promise<string> {
   const uploadPath = 'file';
   let presignedUploadUrl: string;
   let fileEntryId: string;
