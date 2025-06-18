@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint --cache .",
     "lint:fix": "eslint --fix .",
-    "start": "tsx src/index.ts",
+    "start": "dotenv -- tsx src/index.ts",
     "spec-gen:converter": "openapi-typescript ./api-spec/xeovision-converter-api.spec.yaml --output src/types/converter-api-schema.d.ts",
     "spec-gen:storage": "openapi-typescript ./api-spec/xeovision-storage-api.spec.yaml --output src/types/storage-api-schema.d.ts"
   },
@@ -18,14 +18,16 @@
     "@eslint/js": "catalog:lint",
     "@stylistic/eslint-plugin-js": "catalog:lint",
     "@stylistic/eslint-plugin-ts": "catalog:lint",
+    "@types/node": "catalog:typescript",
     "eslint": "catalog:lint",
-    "eslint-plugin-unused-imports": "^4.1.4",
-    "openapi-typescript": "^7.8.0",
-    "tsx": "^4.20.3",
+    "eslint-plugin-unused-imports": "catalog:lint",
+    "openapi-typescript": "catalog:typescript",
     "typescript-eslint": "catalog:lint"
   },
   "dependencies": {
-    "consola": "^3.4.2",
-    "ky": "^1.8.1"
+    "consola": "catalog:runtime",
+    "dotenv-cli": "catalog:runtime",
+    "ky": "catalog:runtime",
+    "tsx": "catalog:runtime"
   }
 }
