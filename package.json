@@ -1,0 +1,31 @@
+{
+  "name": "@creoox/xeoservices-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --cache .",
+    "lint:fix": "eslint --fix .",
+    "start": "tsx src/index.ts",
+    "spec-gen:converter": "openapi-typescript ./api-spec/xeovision-converter-api.spec.yaml --output src/types/converter-api-schema.d.ts",
+    "spec-gen:storage": "openapi-typescript ./api-spec/xeovision-storage-api.spec.yaml --output src/types/storage-api-schema.d.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.11.0",
+  "devDependencies": {
+    "@eslint/js": "catalog:lint",
+    "@stylistic/eslint-plugin-js": "catalog:lint",
+    "@stylistic/eslint-plugin-ts": "catalog:lint",
+    "eslint": "catalog:lint",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "openapi-typescript": "^7.8.0",
+    "tsx": "^4.20.3",
+    "typescript-eslint": "catalog:lint"
+  },
+  "dependencies": {
+    "consola": "^3.4.2",
+    "ky": "^1.8.1"
+  }
+}

@@ -1,0 +1,493 @@
+openapi: 3.0.0
+paths:
+  /file:
+    post:
+      operationId: FileController_createOne
+      summary: Prepare File Upload
+      description: >-
+
+        Creates a new `File Upload` object, generating a unique ID and
+        pre-assigned URLs for uploading the file. Depending on whether a
+        single-part or multi-part upload is requested, the response includes:
+
+
+        - **Single-Part Upload**:
+          - A single pre-assigned upload URL.
+
+        - **Multi-Part Upload**:
+          - Multiple pre-assigned upload URLs (one for each part).
+          - An `uploadId` required for completing the upload.
+
+        ### Usage Scenarios
+
+
+        1. **Single-Part Upload**:
+           - Upload the file using the provided pre-assigned URL via HTTP.
+
+        2. **Multi-Part Upload**:
+           - Upload each file part using the provided URLs (can be done in parallel).
+           - After all parts are uploaded, complete the upload by calling the [complete](#tag/upload/POST/file/{id}/complete) endpoint with the `uploadId`.
+
+        ### Notes
+
+
+        - Pre-assigned URLs are valid for a limited time (usually 1 hour).
+
+
+        ### Limits
+
+
+        - Minimum part size: 5 MiB (does not apply to the last part).
+
+        - Maximum part size: 5 GiB.
+            
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                  description: The name of the file
+                  example: my-file.txt
+                parts:
+                  type: integer
+                  minimum: 1
+                  description: The number of parts the file is split into when uploading
+                  example: 1
+              required:
+                - name
+                - parts
+      responses:
+        '201':
+          description: Created. Upload prepared.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileEntryCreateResponse'
+      tags:
+        - Upload
+  /file/{id}:
+    get:
+      operationId: FileController_getOne
+      summary: Retrieve File Upload Metadata
+      description: >-
+
+        Retrieves information about a `File Upload` object based on its ID.
+
+
+        ### Usage Scenario
+
+
+        - Use this endpoint to fetch metadata about a specific `File Upload`,
+        such as its name or download link.
+            
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The ID of the `File Upload`
+          schema:
+            format: uuid
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileEntryResponse'
+      tags:
+        - Upload
+    delete:
+      operationId: FileController_deleteOne
+      summary: Delete File Upload
+      description: >-
+
+        Removes a `File Upload` object and its associated data, including the
+        file itself, from the system.
+
+
+        ### Usage Scenario
+
+
+        - Use this endpoint to permanently delete a file and its upload metadata
+        from xeoStorage.
+
+
+        ### Notes
+
+
+        - This operation is irreversible. Ensure you intend to delete the file
+        before proceeding.
+
+        - If the file is in use or referenced elsewhere, consider implementing
+        additional checks before deletion.
+            
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The ID of the `File Upload`
+          schema:
+            format: uuid
+            type: string
+      responses:
+        '200':
+          description: The File Upload has been deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileEntryDeleteResponse'
+      tags:
+        - Upload
+  /file/{id}/complete:
+    post:
+      operationId: FileController_completeOne
+      summary: Complete Multi-Part Upload
+      description: >-
+
+        Finalizes the multi-part upload process for a file.
+
+
+        ### Usage Scenario
+
+
+        - After uploading all parts using the pre-assigned URLs, call this
+        endpoint to complete the upload.
+
+
+        ### Required Information
+
+
+        - The `uploadId` received when the `File Upload` object was created
+        ([see endpoint](#tag/upload/POST/file/)).
+
+        - A list of uploaded parts and their ETags (unique identifiers received
+        after uploading each part).
+
+
+        ### Notes
+
+
+        - This endpoint is only applicable for multi-part uploads.
+            
+      parameters:
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                uploadId:
+                  type: string
+                  maxLength: 255
+                  description: The id of the upload, only for multi-part upload, parts > 1
+                parts:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      etag:
+                        type: string
+                        maxLength: 255
+                        description: The upload url
+                      partNumber:
+                        type: integer
+                        description: The part number
+                    required:
+                      - etag
+                      - partNumber
+                  description: The list of etag for each part
+              required:
+                - uploadId
+                - parts
+      responses:
+        '201':
+          description: Multi-part upload completed successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileEntryCompleteResponse'
+      tags:
+        - Upload
+  /file/{id}/headers:
+    get:
+      operationId: FileController_getObjectHeaders
+      summary: Retrieve File Object Metadata
+      description: >-
+
+        Retrieves metadata of the uploaded file object, such as the content
+        length (file size in bytes).
+
+
+        ### Usage Scenario
+
+
+        - Use this endpoint to obtain information about the uploaded file's
+        size.
+
+
+        ### Notes
+
+
+        - The file must exist; otherwise, an error will be returned.
+            
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The ID of the `File Upload`
+          schema:
+            format: uuid
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileEntryObjectHeadersResponse'
+      tags:
+        - Upload
+  /health:
+    get:
+      operationId: HealthController_check
+      summary: check
+      description: Check the health of the service.
+      parameters: []
+      responses:
+        '200':
+          description: The Health Check is successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example: {}
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+        '503':
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+      tags:
+        - Health
+info:
+  title: xeoVision Storage Service
+  description: Storage API for xeoVision, a service for managing files.
+  version: 0.1.0
+  contact: {}
+tags:
+  - name: Upload
+    description: >-
+      Set of endpoints to facilitate file uploads. The `Upload` or `File Upload`
+      resource, is a helper object for uploading files to xeoStorge for futher
+      conversion .
+servers:
+  - url: https://storage.xeo.vision
+    description: Production environment
+  - url: https://storage.xeovision.io
+    description: Test environment
+  - url: http://localhost:3002
+    description: Local environment
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    UploadUrlType:
+      type: object
+      properties:
+        uploadUrl:
+          type: string
+          description: The URL to upload the file part
+          example: https://example.com/...
+        partNumber:
+          type: number
+          description: The part number
+          example: 1
+      required:
+        - uploadUrl
+        - partNumber
+    FileEntryCreateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of created file upload entry
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+        uploadId:
+          type: string
+          description: The ID of the upload, only for multi-part upload, parts > 1
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+        parts:
+          description: List of uploadUrls
+          type: array
+          items:
+            $ref: '#/components/schemas/UploadUrlType'
+      required:
+        - id
+        - uploadId
+        - parts
+    FileEntryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the process
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+        name:
+          type: string
+          description: File name
+        updatedAt:
+          type: string
+          description: Updated at
+          format: date-time
+        createdAt:
+          type: string
+          description: Created at
+          format: date-time
+        downloadUrl:
+          type: string
+          description: Download url
+          example: https://example.com/...
+      required:
+        - id
+        - name
+        - updatedAt
+        - createdAt
+        - downloadUrl
+    FileEntryCompleteResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the file upload
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+      required:
+        - id
+    FileEntryObjectHeadersResponse:
+      type: object
+      properties:
+        contentLength:
+          type: number | null
+          description: The length of the file in bytes
+          example: 123456
+      required:
+        - contentLength
+    FileEntryDeleteResponse:
+      type: object
+      properties:
+        affected:
+          type: number
+          description: The number of entries affected
+          example: 1
+      required:
+        - affected

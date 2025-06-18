@@ -1,0 +1,346 @@
+openapi: 3.0.0
+paths:
+  /process:
+    post:
+      operationId: ProcessController_createOne
+      summary: createOne
+      description: Create and start the conversion process.
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - glb-xkt
+                    - ifc-xkt
+                    - zip-extract
+                    - ifc-ids-validate
+                    - ifc-model-check
+                  description: Type of the conversion process
+                downloadUrl:
+                  type: string
+                  format: uri
+                  description: The URL of the input file
+                eventsWebhook:
+                  type: object
+                  properties:
+                    url:
+                      type: string
+                      format: uri
+                      description: The URL to send events to
+                    method:
+                      type: string
+                      enum:
+                        - POST
+                        - GET
+                        - PUT
+                        - DELETE
+                        - PATCH
+                      description: The HTTP method to use
+                    headers:
+                      type: object
+                      additionalProperties:
+                        type: string
+                      description: The HTTP headers to send
+                  required:
+                    - url
+                  description: The HTTP webhook to send events to
+                # [Hidden:start]
+                # taskQueue:
+                #   type: string
+                #   enum:
+                #     - standard-conversion
+                #     - priority-conversion
+                #   description: The task queue to use
+                # [Hidden:end]
+                downloadValidateUrl:
+                  type: string
+                  format: uri
+                  description: >-
+                    The URL of the input file against which to validate the IFC
+                    file
+              required:
+                - type
+                - downloadUrl
+      responses:
+        '200':
+          description: The conversion process was started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessCreateResponse'
+      tags:
+        - Process
+  /process/{id}:
+    get:
+      operationId: ProcessController_getOne
+      summary: getOne
+      description: Get process entry by ID.
+      parameters:
+        - name: id
+          required: true
+          in: path
+          description: The ID of the process
+          schema:
+            format: uuid
+            type: string
+      responses:
+        '200':
+          description: The process entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProcessEntryResponse'
+      tags:
+        - Process
+  /health:
+    get:
+      operationId: HealthController_check
+      summary: check
+      description: Check the health of the service
+      parameters: []
+      responses:
+        '200':
+          description: The Health Check is successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example: {}
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+        '503':
+          description: The Health Check is not successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: error
+                  info:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  error:
+                    type: object
+                    example:
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+                    nullable: true
+                  details:
+                    type: object
+                    example:
+                      database:
+                        status: up
+                      redis:
+                        status: down
+                        message: Could not connect
+                    additionalProperties:
+                      type: object
+                      required:
+                        - status
+                      properties:
+                        status:
+                          type: string
+                      additionalProperties: true
+      tags:
+        - Health
+info:
+  title: xeoVision Converter API
+  description: >-
+    Converter API for xeoVision, a tool for converting model files to different
+    formats.
+  version: 0.1.0
+  contact: {}
+tags: []
+servers:
+  - url: https://converter.xeo.vision
+    description: Production environment
+  - url: https://converter.xeovision.io
+    description: Test environment
+  - url: http://localhost:3001
+    description: Local environment
+components:
+  securitySchemes:
+    bearer:
+      scheme: bearer
+      bearerFormat: JWT
+      type: http
+  schemas:
+    ProcessCreateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of created process
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+      required:
+        - id
+    ProcessOutputResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of process output
+          format: uuid
+        fileName:
+          type: string
+          description: File name
+        fileType:
+          type: string
+          description: File type
+          enum:
+            - xkt
+            - ifc
+            - glb
+            - bim
+            - las
+            - stl
+            - obj
+            - mtl
+            - zip
+            - json
+            - log
+            - db
+        fileSize:
+          type: number
+          description: File size
+        url:
+          type: string
+          description: Url of the process output
+          format: url
+        updatedAt:
+          type: string
+          description: Updated at
+          format: date-time
+        createdAt:
+          type: string
+          description: Created at
+          format: date-time
+      required:
+        - id
+        - fileName
+        - fileType
+        - fileSize
+        - url
+        - updatedAt
+        - createdAt
+    ProcessEntryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The ID of the process
+          example: 123e4567-e89b-12d3-a456-426614174000
+          format: uuid
+        processOutputs:
+          description: Process outputs
+          type: array
+          items:
+            $ref: '#/components/schemas/ProcessOutputResponse'
+        status:
+          type: string
+          description: Process status
+          enum:
+            - process_created
+            - process_started
+            - process_preparing
+            - process_converting
+            - process_finalizing
+            - process_completed
+            - process_error
+        type:
+          type: string
+          description: Process type
+          enum:
+            - glb-xkt
+            - ifc-xkt
+            - zip-extract
+            - ifc-ids-validate
+            - ifc-model-check
+        viewerUrl:
+          type: string
+          description: Direct link to show model in viewer
+          format: url
+        updatedAt:
+          type: string
+          description: Updated at
+          format: date-time
+        createdAt:
+          type: string
+          description: Created at
+          format: date-time
+      required:
+        - id
+        - processOutputs
+        - status
+        - type
+        - updatedAt
+        - createdAt
