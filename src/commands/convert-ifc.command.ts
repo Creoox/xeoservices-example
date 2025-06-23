@@ -1,17 +1,13 @@
 import type { FileEntryGetResponse, PrepareFileUploadSuccessResponse, ProcessCreateSuccessResponse } from "../types";
 import ky, { HTTPError } from "ky";
 import { xeoConverterClient, xeoStorageClient } from '../client';
-
-
-import { type CommandModule } from 'yargs';
+import type { CommandModule } from 'yargs';
 import { consola } from "consola";
 import fs from 'fs';
-
 import type { KyInstance } from "ky";
 import { LOGS_PATH } from '../constants';
 import path from 'path';
 import util from 'util';
-
 
 async function uploadFile(xeoStorageClient: KyInstance, filePath: string): Promise<PrepareFileUploadSuccessResponse> {
   const uploadPath = 'file';
@@ -113,7 +109,6 @@ async function createIfcToXktProcess(xeoConverterClient: KyInstance, fileUrl: st
   }
 }
 
-
 async function convertIfcXkt(xeoStorageClient: KyInstance, xeoConverterClient: KyInstance, filePath: string, logFileName:string): Promise<void> {
   const logs: {
     timestamp: string
@@ -126,6 +121,7 @@ async function convertIfcXkt(xeoStorageClient: KyInstance, xeoConverterClient: K
     fileEntry: null,
     procesEntry: null,
   };
+
 
   const fileUploadSuccessResponse = await uploadFile( xeoStorageClient , filePath);
   logs.fileUpload = fileUploadSuccessResponse;
@@ -143,7 +139,6 @@ async function convertIfcXkt(xeoStorageClient: KyInstance, xeoConverterClient: K
   consola.success(`Conversion process logs written to ${logPath}`);
 
 }
-
 
 /**
  * Converts a file path to a valid filename by:
@@ -189,7 +184,6 @@ function pathToValidFilename(filePath: string, replacement: string = '_'): strin
 
   return filename;
 }
-
 
 export const convertIfcXktCommand: CommandModule = {
   command: 'convert-ifc-xkt',

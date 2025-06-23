@@ -50,7 +50,6 @@ async function checkServicesHealth(xeoConverterClient: KyInstance, xeoStorageCli
   }
 }
 
-
 export const checkServicesHealthCommand: CommandModule = {
   command: 'health',
   describe: 'Check xeoservices health',

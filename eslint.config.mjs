@@ -1,7 +1,8 @@
 // @ts-check
 
 import eslint from '@eslint/js';
-import stylisticTs from '@stylistic/eslint-plugin-ts';
+import stylistic from '@stylistic/eslint-plugin';
+
 import tseslint from 'typescript-eslint';
 import unusedImports from 'eslint-plugin-unused-imports';
 
@@ -14,7 +15,7 @@ export default tseslint.config(
       tseslint.configs.recommended,
     ],
     plugins: {
-      '@stylistic/ts': stylisticTs,
+      '@stylistic': stylistic,
       'unused-imports': unusedImports,
     },
     rules: {
@@ -28,16 +29,17 @@ export default tseslint.config(
           allowSeparatedGroups: false,
         },
       ],
-      '@stylistic/ts/comma-dangle': ['error', {
+      '@stylistic/comma-dangle': ['error', {
         arrays: 'always-multiline',
         objects: 'always-multiline',
         imports: 'always-multiline',
         exports: 'always-multiline',
         functions: 'always-multiline',
       }],
-      '@stylistic/ts/object-curly-spacing': ['error', 'always'],
-      '@stylistic/ts/indent': ['error', 2],
-      '@stylistic/ts/semi': ['error', 'always'],
+      '@stylistic/object-curly-spacing': ['error', 'always'],
+      '@stylistic/indent': ['error', 2],
+      '@stylistic/semi': ['error', 'always'],
+      '@stylistic/no-multiple-empty-lines': ['error'],
       "no-multi-spaces": ["error"],
       // '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': ['warn'],

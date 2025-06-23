@@ -13,12 +13,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.11.0",
   "devDependencies": {
     "@eslint/js": "catalog:lint",
-    "@stylistic/eslint-plugin-js": "catalog:lint",
-    "@stylistic/eslint-plugin-ts": "catalog:lint",
+    "@stylistic/eslint-plugin": "catalog:lint",
     "@types/node": "catalog:typescript",
+    "@types/yargs": "catalog:typescript",
     "eslint": "catalog:lint",
     "eslint-plugin-unused-imports": "catalog:lint",
     "openapi-typescript": "catalog:typescript",
@@ -29,6 +28,12 @@
     "dotenv-cli": "catalog:runtime",
     "ky": "catalog:runtime",
     "tsx": "catalog:runtime",
-    "yargs": "^18.0.0"
+    "yargs": "catalog:runtime"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "onFail": "error"
+    }
   }
 }
