@@ -28,6 +28,7 @@
     "consola": "catalog:runtime",
     "dotenv-cli": "catalog:runtime",
     "ky": "catalog:runtime",
-    "tsx": "catalog:runtime"
+    "tsx": "catalog:runtime",
+    "yargs": "^18.0.0"
   }
 }
