@@ -8,6 +8,11 @@ import type { ProcessGetResponse } from "../types";
 import util from 'util';
 import { xeoConverterClient } from '../client';
 
+/**
+ *  Checks the status of a conversion process by its ID and logs the result.
+ * @param xeoConverterClient - The client instance for xeo conversion operations.
+ * @param processId - The ID of the process to check.
+ */
 async function checkProcess(xeoConverterClient: KyInstance, processId: string){
   const conversionPath = 'process';
   const logs: {
@@ -38,6 +43,10 @@ async function checkProcess(xeoConverterClient: KyInstance, processId: string){
 }
 
 
+/**
+ * Command module to check process status by ID.
+ * It fetches the process status from xeoConverterClient and logs the result.
+ */
 export const checkProcessCommand: CommandModule = {
   command: 'check-process',
   describe: 'Check process status by ID',

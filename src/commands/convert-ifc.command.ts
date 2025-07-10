@@ -9,6 +9,13 @@ import { LOGS_PATH } from '../constants';
 import path from 'path';
 import util from 'util';
 
+/**
+ * Uploads a file to the xeoStorageClient and returns the upload response.
+ *
+ * @param xeoStorageClient - The client instance for xeo storage operations.
+ * @param filePath - The path to the file to be uploaded.
+ * @returns A promise that resolves to the upload response.
+ */
 async function uploadFile(xeoStorageClient: KyInstance, filePath: string): Promise<PrepareFileUploadSuccessResponse> {
   const uploadPath = 'file';
   // Check if the file exists
@@ -59,6 +66,13 @@ async function uploadFile(xeoStorageClient: KyInstance, filePath: string): Promi
   return fileUploadSuccessResponse;
 }
 
+/**
+ * Fetches the file entry metadata from xeoStorageClient using the file entry ID.
+ *
+ * @param xeoStorageClient - The client instance for xeo storage operations.
+ * @param fileEntryId - The ID of the file entry to fetch metadata for.
+ * @returns A promise that resolves to the file entry metadata.
+ */
 async function getFileEntryDownloadUrl(xeoStorageClient:KyInstance, fileEntryId: string): Promise<FileEntryGetResponse> {
   const metadataPath = `file/${fileEntryId}`;
   try {
@@ -81,6 +95,13 @@ async function getFileEntryDownloadUrl(xeoStorageClient:KyInstance, fileEntryId:
   }
 };
 
+/**
+ * Creates a conversion process for converting IFC to XKT format.
+ *
+ * @param xeoConverterClient - The client instance for xeo conversion operations.
+ * @param fileUrl - The URL of the file to be converted.
+ * @returns A promise that resolves to the process creation response.
+ */
 async function createIfcToXktProcess(xeoConverterClient: KyInstance, fileUrl: string): Promise<ProcessCreateSuccessResponse> {
   const conversionPath = 'process';
   try {
@@ -109,6 +130,15 @@ async function createIfcToXktProcess(xeoConverterClient: KyInstance, fileUrl: st
   }
 }
 
+/**
+ * Converts an IFC file to XKT format and logs the process.
+ *
+ * @param xeoStorageClient - The client instance for xeo storage operations.
+ * @param xeoConverterClient - The client instance for xeo conversion operations.
+ * @param filePath - The path to the IFC file to be converted.
+ * @param logFileName - The name of the log file to write the process logs.
+ * @returns A promise that resolves when the conversion is complete.
+ */
 async function convertIfcXkt(xeoStorageClient: KyInstance, xeoConverterClient: KyInstance, filePath: string, logFileName:string): Promise<void> {
   const logs: {
     timestamp: string
@@ -185,6 +215,10 @@ function pathToValidFilename(filePath: string, replacement: string = '_'): strin
   return filename;
 }
 
+/**
+ * Command module to convert IFC file to XKT format.
+ * It uploads the IFC file, fetches its metadata, and starts the conversion process.
+ */
 export const convertIfcXktCommand: CommandModule = {
   command: 'convert-ifc-xkt',
   describe: 'Convert IFC file to XKT format',

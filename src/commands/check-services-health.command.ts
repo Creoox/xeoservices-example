@@ -8,6 +8,12 @@ import { HTTPError } from "ky";
 import type { KyInstance } from 'ky';
 import util from 'util';
 
+
+/**
+ * Checks the health of xeoConverter and xeoStorage services and logs the status.
+ * @param xeoConverterClient - The client instance for xeo conversion operations.
+ * @param xeoStorageClient - The client instance for xeo storage operations.
+ */
 async function checkServicesHealth(xeoConverterClient: KyInstance, xeoStorageClient: KyInstance) {
   const healthPath = 'health';
   const logs: {
@@ -50,6 +56,11 @@ async function checkServicesHealth(xeoConverterClient: KyInstance, xeoStorageCli
   }
 }
 
+/**
+ * Command module to check the health of xeoservices.
+ * It fetches the health status of xeoConverter and xeoStorage services
+ * and logs the results to a file.
+ */
 export const checkServicesHealthCommand: CommandModule = {
   command: 'health',
   describe: 'Check xeoservices health',

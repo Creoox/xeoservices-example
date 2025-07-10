@@ -1,3 +1,9 @@
+/**
+ * Client module for interacting with xeo services.
+ * It provides clients for xeoStorage and xeoConverter services using the ky HTTP client.
+ * The clients are configured with the base URLs and authorization headers.
+ */
+
 import ky from 'ky';
 
 if (!process.env.XEO_SERVICES_ACCESS_TOKEN) {
@@ -6,6 +12,7 @@ if (!process.env.XEO_SERVICES_ACCESS_TOKEN) {
 
 const XEO_STORAGE_URL = "https://storage.xeo.vision";
 const XEO_CONVERTER_URL = "https://converter.xeo.vision";
+
 
 export const xeoStorageClient = ky.create({
   prefixUrl: XEO_STORAGE_URL,
