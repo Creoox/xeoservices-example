@@ -1,0 +1,39 @@
+{
+  "name": "@creoox/xeoservices-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint --cache .",
+    "lint:fix": "eslint --fix .",
+    "start": "dotenv -- tsx src/index.ts",
+    "spec-gen:converter": "openapi-typescript ./api-spec/xeovision-converter-api.spec.yaml --output src/types/converter-api-schema.d.ts",
+    "spec-gen:storage": "openapi-typescript ./api-spec/xeovision-storage-api.spec.yaml --output src/types/storage-api-schema.d.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "catalog:lint",
+    "@stylistic/eslint-plugin": "catalog:lint",
+    "@types/node": "catalog:typescript",
+    "@types/yargs": "catalog:typescript",
+    "eslint": "catalog:lint",
+    "eslint-plugin-unused-imports": "catalog:lint",
+    "openapi-typescript": "catalog:typescript",
+    "typescript-eslint": "catalog:lint"
+  },
+  "dependencies": {
+    "consola": "catalog:runtime",
+    "dotenv-cli": "catalog:runtime",
+    "ky": "catalog:runtime",
+    "tsx": "catalog:runtime",
+    "yargs": "catalog:runtime"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "onFail": "error"
+    }
+  }
+}
